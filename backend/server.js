@@ -10,6 +10,8 @@ const authRouter =  require("./routes/auth")
 const userRouter = require("./routes/user");
 const foodRouter = require("./routes/food");
 const categoryRouter = require("./routes/category");
+const tableRouter = require("./routes/table");
+const orderRouter = require("./routes/order");
 
 app.use(express.json())
 app.use(cors())
@@ -26,6 +28,8 @@ app.use("/api/user",userRouter)
 app.use("/api/food", foodRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/category", categoryRouter);
+app.use("/api/table", tableRouter);
+app.use("/api/order", orderRouter);
 
 app.get("/",(req,res)=>{
     res.send("Hello Team 1")
