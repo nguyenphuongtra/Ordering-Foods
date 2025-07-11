@@ -4,7 +4,7 @@ const User = require('../models/User');
 const userController = require("../controllers/userController")
 
 
-router.get('/', userController.getUser);
+router.get('/', userController.getUsers);
 router.get('/:id', userController.getUserById)
 
 

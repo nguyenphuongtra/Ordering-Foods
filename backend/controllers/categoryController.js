@@ -20,6 +20,7 @@ exports.getCategoryById = async (req, res) => {
         res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 }
+
 exports.createCategory = async (req, res) => {
     try {
         const { name, description } = req.body;
@@ -49,7 +50,7 @@ exports.updateCategory = async (req, res) => {
     }
 }
 
-exports.deleteCategory = async (req, res) => {
+ exports. deleteCategory = async (req, res) => {
     try {
         const category = await Category.findByIdAndDelete(req.params.id);
         if (!category) {
@@ -61,3 +62,4 @@ exports.deleteCategory = async (req, res) => {
         res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 }
+
