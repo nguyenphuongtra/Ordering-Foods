@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const passport = require("../config/google");
 const authController = require("../controllers/authController")
+const authMiddleware = require("../middleware/auth");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 
@@ -17,6 +18,7 @@ router.get("/google/callback",
       id: user._id, 
       email: user.email, 
       name: user.name, 
+      role: user.role,
       avatar: user.avatar 
     }, process.env.JWT_SECRET, 
     { 
@@ -29,5 +31,7 @@ router.get("/google/callback",
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);
+router.get('/profile', authMiddleware, authController.getProfile);
+
 
 module.exports = router;
