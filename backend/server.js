@@ -4,7 +4,7 @@ const session = require('express-session');
 const connectDB = require("./config/database")
 const cors = require("cors")
 const app = express()
-const port = 4000;
+const PORT = process.env.PORT || 4000;
 
 const authRouter =  require("./routes/auth")
 const userRouter = require("./routes/user");
@@ -33,12 +33,12 @@ app.use("/api/category", categoryRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/reviews", reviewRouter);
-app.use("/api/tables", tableRouter );
+app.use("/api/tables", tableRouter);
 // app.use("/admin", adminRouter);
 app.get("/",(req,res)=>{
     res.send("Hello Team 1")
 })
 
-app.listen(port,()=>{
-    console.log(`Server running on port http://localhost:${port}`)
+app.listen(PORT,()=>{
+    console.log(`Server running on port http://localhost:${PORT}`)
 })
