@@ -6,26 +6,35 @@ const authMiddleware = require("../middleware/auth");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 
-router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+router.get("/google", (req, res, next) => {
+  const { tableId } = req.query;
+  req.session.tableId = tableId;
+  passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
+});
+
 router.get("/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
     const user = req.user;
+    const tableId = req.session.tableId || "";
+
     if (!user) {
-      return res.redirect("http://localhost:3000?error=NoUser");
+      return res.redirect(`${process.env.CLIENT_URL}?error=NoUser`);
     }
-    const token = jwt.sign({ 
-      id: user._id, 
-      email: user.email, 
-      name: user.name, 
-      role: user.role,
-      avatar: user.avatar 
-    }, process.env.JWT_SECRET, 
-    { 
-      expiresIn: process.env.JWT_EXPIRE
-    }  
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        avatar: user.avatar,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRE }
     );
-    res.redirect(`http://localhost:3000?token=${token}`);
+
+    res.redirect(`${process.env.CLIENT_URL}/login?token=${token}&tableId=${tableId}`);
   }
 );
 

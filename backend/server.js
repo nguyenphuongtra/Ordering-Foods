@@ -15,6 +15,7 @@ const cartRouter = require("./routes/cart");
 const orderRouter = require("./routes/order");
 const reviewRouter = require("./routes/review");
 const tableRouter = require("./routes/table");
+const statsRouter = require("./routes/stats");
 app.use(express.json())
 app.use(cors())
 app.use(session({
@@ -34,6 +35,7 @@ app.use("/api/cart", cartRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/reviews", reviewRouter);
 app.use("/api/tables", tableRouter);
+app.use("/api/stats", statsRouter);
 // app.use("/admin", adminRouter);
 app.get("/",(req,res)=>{
     res.send("Hello Team 1")

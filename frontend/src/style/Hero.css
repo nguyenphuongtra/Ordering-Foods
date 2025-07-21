@@ -1,0 +1,204 @@
+.hero-section {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fef7cd 0%, #fed7aa 50%, #fecaca 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.background-pattern {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+.floating-1 {
+  position: absolute;
+  top: 80px;
+  left: 80px;
+  width: 128px;
+  height: 128px;
+  background: #f59e0b;
+  border-radius: 50%;
+  filter: blur(48px);
+}
+
+.floating-2 {
+  position: absolute;
+  bottom: 80px;
+  right: 80px;
+  width: 192px;
+  height: 192px;
+  background: #fb923c;
+  border-radius: 50%;
+  filter: blur(48px);
+}
+
+.floating-3 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 256px;
+  height: 256px;
+  background: #fca5a5;
+  border-radius: 50%;
+  filter: blur(48px);
+}
+
+.gradient-text {
+  background: linear-gradient(to right, #d97706, #ea580c, #dc2626);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.image-container {
+  height: 500px;
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.2) 0%, transparent 100%);
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.nav-left {
+  left: 16px;
+}
+
+.nav-right {
+  right: 16px;
+}
+
+.feature-badge {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  border-radius: 25px;
+}
+
+.gradient-btn {
+  background: linear-gradient(to right, #f59e0b, #fb923c);
+  border: none;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.outline-btn {
+  border: 2px solid #f59e0b;
+  border-radius: 25px;
+  background-color: transparent;
+  color: #d97706;
+  transition: all 0.3s ease;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #d1d5db;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.active-indicator {
+  width: 32px;
+  background-color: #f59e0b;
+}
+
+.rating-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  border-radius: 25px;
+}
+
+.decorative-1 {
+  position: absolute;
+  top: -24px;
+  left: -24px;
+  width: 48px;
+  height: 48px;
+  background-color: #f59e0b;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.decorative-2 {
+  position: absolute;
+  bottom: -16px;
+  right: -16px;
+  width: 32px;
+  height: 32px;
+  background-color: #fb923c;
+  border-radius: 50%;
+  animation: ping 1s infinite;
+}
+
+.accent-emoji {
+  font-size: 4rem;
+  animation: bounce 1s infinite;
+}
+
+.wave-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+@keyframes ping {
+  0% { transform: scale(1); opacity: 1; }
+  75%, 100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.hero-image:hover {
+  transform: scale(1.05);
+  transition: transform 0.5s ease;
+}
+
+.btn-hover:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-btn:hover {
+  transform: translateY(-50%) scale(1.1);
+  background-color: white;
+}
