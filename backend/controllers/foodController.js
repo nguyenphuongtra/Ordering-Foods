@@ -45,10 +45,6 @@ exports.createFood = async (req, res) => {
 
 exports.getFoods = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
-        const skip = (page - 1) * limit;
-
         // Tìm kiếm và lọc
         const filter = {};
         if (req.query.category) {
@@ -58,24 +54,13 @@ exports.getFoods = async (req, res) => {
             filter.name = { $regex: req.query.search, $options: 'i' };
         }
 
-        const foods = await Food.find(filter)
-            .skip(skip)
-            .limit(limit)
-            .sort({ createdAt: -1 });
-
-        const total = await Food.countDocuments(filter);
+        const foods = await Food.find(filter).sort({ createdAt: -1 });
 
         res.status(200).json({
             success: true,
             message: 'Lấy danh sách món ăn thành công',
             data: {
-                foods,
-                pagination: {
-                    page,
-                    limit,
-                    total,
-                    pages: Math.ceil(total / limit)
-                }
+                foods
             }
         });
     } catch (err) {

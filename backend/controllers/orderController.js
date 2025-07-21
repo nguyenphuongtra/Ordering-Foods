@@ -4,8 +4,9 @@ const Table = require("../models/Table");
 
 exports.createOrder = async (req, res) => {
     try {
-        const { userId, tableId, items, totalAmount, paymentMethod } = req.body;
-
+        const userId = req.body.userId || req.body.user;
+        const tableId = req.body.tableId || req.body.table;
+        const { items, totalAmount, paymentMethod } = req.body;
         // Validation
         if (!userId || !tableId || !items || !totalAmount) {
             return res.status(400).json({
@@ -85,7 +86,7 @@ exports.getOrders = async (req, res) => {
 
         const orders = await Order.find(filter)
             .populate('user', 'name email')
-            .populate('table', 'number')
+            .populate('table', 'tableNumber')
             .populate('items.food', 'name price')
             .skip(skip)
             .limit(limit)
@@ -119,7 +120,7 @@ exports.getOrder = async (req, res) => {
     try {
         const order = await Order.findById(req.params.id)
             .populate('user', 'name email phone')
-            .populate('table', 'number')
+            .populate('table', 'tableNumber')
             .populate('items.food', 'name price image');
 
         if (!order) {
@@ -154,7 +155,7 @@ exports.updateOrder = async (req, res) => {
         const { status } = req.body;
 
         // Validation trạng thái hợp lệ
-        const validStatuses = ['pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled'];
+        const validStatuses = ['Đang xử lý', 'Đã hoàn thành', 'Đã hủy'];
         if (status && !validStatuses.includes(status)) {
             return res.status(400).json({
                 success: false,
@@ -229,7 +230,7 @@ exports.getOrdersByUser = async (req, res) => {
     try {
         const userId = req.params.userId;
         const orders = await Order.find({ user: userId })
-            .populate('table', 'number')
+            .populate('table', 'tableNumber')
             .populate('items.food', 'name price')
             .sort({ createdAt: -1 });
 
