@@ -46,7 +46,11 @@ exports.login = async (req, res) => {
       { id: user._id, email: user.email, name: user.name, role: user.role },
       process.env.JWT_SECRET, 
       { expiresIn: process.env.JWT_EXPIRE });
-    res.json({ token });
+    res.json({
+      success: true,
+      token,
+      data: user
+    });
   } catch (err) {
     res.status(500).json({ message: "Lỗi server" });
   }
