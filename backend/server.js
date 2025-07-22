@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require("express")
+const path = require("path");
 const session = require('express-session');
 const connectDB = require("./config/database")
 const cors = require("cors")
@@ -17,7 +18,21 @@ const reviewRouter = require("./routes/review");
 const tableRouter = require("./routes/table");
 const statsRouter = require("./routes/stats");
 app.use(express.json())
-app.use(cors())
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://ordering-foods-ki96.vercel.app'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 app.use(session({
   secret: process.env.JWT_SECRET,
   resave: false,
@@ -40,6 +55,13 @@ app.use("/api/stats", statsRouter);
 app.get("/",(req,res)=>{
     res.send("Hello Team 1")
 })
+
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../frontend/build")));
+    app.get("*", (req, res) => {
+      res.sendFile(path.resolve(__dirname, "../frontend/build/index.html"));
+    });
+}
 
 app.listen(PORT,()=>{
     console.log(`Server running on port http://localhost:${PORT}`)
