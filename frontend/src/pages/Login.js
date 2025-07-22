@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import { apiService } from "../service/apiService";
 import "../assets/css/auth.css";
 import { AuthContext } from "../contexts/AuthContext";
 
@@ -45,14 +46,7 @@ const Login = () => {
     e.preventDefault();
     setError("");
     try {
-      const res = await fetch("http://localhost:4000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Đăng nhập thất bại");
-
+      const data = await apiService.login(form); // sử dụng apiService
       await login(data.token, data.user);
       navigate(from, { replace: true });
     } catch (err) {
@@ -63,8 +57,8 @@ const Login = () => {
   const handleGoogleLogin = () => {
     const tableId = location.state?.tableId;
     const redirectUrl = tableId
-      ? `http://localhost:4000/api/auth/google?tableId=${encodeURIComponent(tableId)}`
-      : "http://localhost:4000/api/auth/google";
+      ? `${process.env.REACT_APP_API_URL}/auth/google?tableId=${encodeURIComponent(tableId)}`
+      : `${process.env.REACT_APP_API_URL}/auth/google`;
 
     window.location.href = redirectUrl;
   };
