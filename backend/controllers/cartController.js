@@ -55,13 +55,12 @@ exports.getCart = async (req, res) => {
     try {
         const { userId } = req.params;
 
-        const cart = await Cart.findOne({ user: userId }).populate('items.food');
+        let cart = await Cart.findOne({ user: userId }).populate('items.food');
         
         if (!cart) {
-            return res.status(404).json({ 
-                success: false,
-                message: 'Giỏ hàng không tìm thấy' 
-            });
+            // Nếu không tìm thấy giỏ hàng, tạo một giỏ hàng mới cho người dùng
+            cart = new Cart({ user: userId, items: [] });
+            await cart.save();
         }
 
         res.status(200).json({
