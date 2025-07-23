@@ -1,54 +1,50 @@
 const Cart = require("../models/Cart");
+const Food = require("../models/Food");
 
 exports.addToCart = async (req, res) => {
-    try {
-        const { userId, foodId, quantity } = req.body;
+  try {
+    const { foodId, quantity } = req.body;
+    const userId = req.user.id;
 
-        if (!userId || !foodId || !quantity) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'Vui lòng nhập đầy đủ thông tin' 
-            });
-        }
+    let cart = await Cart.findOne({ user: userId }).populate('items.food');
 
-        if (quantity <= 0) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'Số lượng phải lớn hơn 0' 
-            });
-        }
-        let cart = await Cart.findOne({ user: userId });
-        if (!cart) {
-            cart = new Cart({ user: userId, items: [] });
-        }
-
-
-        const itemIndex = cart.items.findIndex(item => item.food.toString() === foodId);
-
-        if (itemIndex > -1) {
-            cart.items[itemIndex].quantity += quantity;
-        } else {
-            cart.items.push({ food: foodId, quantity });
-        }
-
-        await cart.save();
-        
-
-        await cart.populate('items.food');
-
-        res.status(201).json({
-            success: true,
-            message: 'Thêm vào giỏ hàng thành công',
-            data: cart
-        });
-    } catch (error) {
-        res.status(500).json({ 
-            success: false,
-            message: 'Lỗi server', 
-            error: error.message 
-        });
+    const food = await Food.findById(foodId);
+    if (!food) {
+      return res.status(404).json({ message: 'Món ăn không tồn tại' });
     }
+
+    if (!cart) {
+      cart = new Cart({
+        user: userId,
+        items: [{ food: foodId, quantity }],
+        totalAmount: food.price * quantity,
+      });
+    } else {
+      const itemIndex = cart.items.findIndex(
+        (item) => item.food._id.toString() === foodId
+      );
+
+      if (itemIndex > -1) {
+        cart.items[itemIndex].quantity += quantity;
+      } else {
+        cart.items.push({ food: foodId, quantity });
+      }
+
+      // Cập nhật lại totalAmount
+      cart.totalAmount = cart.items.reduce(
+        (sum, item) => sum + item.quantity * item.food.price,
+        0
+      );
+    }
+
+    await cart.save();
+    res.status(200).json({ success: true, message: 'Đã thêm vào giỏ hàng', cart });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Lỗi server' });
+  }
 };
+
 
 
 exports.getCart = async (req, res) => {
@@ -79,140 +75,71 @@ exports.getCart = async (req, res) => {
 
 
 exports.updateCart = async (req, res) => {
-    try {
-        const { userId, foodId, quantity } = req.body;
+  try {
+    const { foodId, quantity } = req.body;
+    const userId = req.user.id;
 
+    const cart = await Cart.findOne({ user: userId }).populate('items.food');
+    if (!cart) return res.status(404).json({ message: 'Không tìm thấy giỏ hàng' });
 
-        if (!userId || !foodId || quantity === undefined) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'Vui lòng nhập đầy đủ thông tin' 
-            });
-        }
+    const item = cart.items.find((item) => item.food._id.toString() === foodId);
+    if (!item) return res.status(404).json({ message: 'Món ăn không có trong giỏ' });
 
-        if (quantity < 0) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'Số lượng không được âm' 
-            });
-        }
+    item.quantity = quantity;
 
-        const cart = await Cart.findOne({ user: userId });
+    cart.totalAmount = cart.items.reduce(
+      (sum, item) => sum + item.quantity * item.food.price,
+      0
+    );
 
-        if (!cart) {
-            return res.status(404).json({ 
-                success: false,
-                message: 'Giỏ hàng không tìm thấy' 
-            });
-        }
-
-        const itemIndex = cart.items.findIndex(item => item.food.toString() === foodId);
-
-        if (itemIndex > -1) {
-            if (quantity === 0) {
-                cart.items.splice(itemIndex, 1);
-            } else {
-                cart.items[itemIndex].quantity = quantity;
-            }
-            
-            await cart.save();
-            await cart.populate('items.food');
-            
-            res.status(200).json({
-                success: true,
-                message: 'Cập nhật giỏ hàng thành công',
-                data: cart
-            });
-        } else {
-            res.status(404).json({ 
-                success: false,
-                message: 'Món ăn không có trong giỏ hàng' 
-            });
-        }
-    } catch (error) {
-        res.status(500).json({ 
-            success: false,
-            message: 'Lỗi server', 
-            error: error.message 
-        });
-    }
+    await cart.save();
+    res.status(200).json({ success: true, message: 'Đã cập nhật giỏ hàng', cart });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Lỗi server' });
+  }
 };
 
 exports.removeFromCart = async (req, res) => {
-    try {
-        const { userId, foodId } = req.body;
+  try {
+    const { foodId } = req.body;
+    const userId = req.user.id;
 
-        if (!userId || !foodId) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'Vui lòng nhập đầy đủ thông tin' 
-            });
-        }
+    const cart = await Cart.findOne({ user: userId }).populate('items.food');
+    if (!cart) return res.status(404).json({ message: 'Không tìm thấy giỏ hàng' });
 
-        const cart = await Cart.findOne({ user: userId });
+    cart.items = cart.items.filter((item) => item.food._id.toString() !== foodId);
 
-        if (!cart) {
-            return res.status(404).json({ 
-                success: false,
-                message: 'Giỏ hàng không tìm thấy' 
-            });
-        }
+    cart.totalAmount = cart.items.reduce(
+      (sum, item) => sum + item.quantity * item.food.price,
+      0
+    );
 
-        const itemIndex = cart.items.findIndex(item => item.food.toString() === foodId);
-
-        if (itemIndex > -1) {
-            cart.items.splice(itemIndex, 1);
-            await cart.save();
-            await cart.populate('items.food');
-            
-            res.status(200).json({
-                success: true,
-                message: 'Xóa sản phẩm khỏi giỏ hàng thành công',
-                data: cart
-            });
-        } else {
-            res.status(404).json({ 
-                success: false,
-                message: 'Món ăn không có trong giỏ hàng' 
-            });
-        }
-    } catch (error) {
-        res.status(500).json({ 
-            success: false,
-            message: 'Lỗi server', 
-            error: error.message 
-        });
-    }
+    await cart.save();
+    res.status(200).json({ success: true, message: 'Đã xoá khỏi giỏ hàng', cart });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Lỗi server' });
+  }
 };
 
+
 exports.clearCart = async (req, res) => {
-    try {
-        const { userId } = req.params;
+  try {
+    const userId = req.user.id;
+    const cart = await Cart.findOne({ user: userId });
 
-        const cart = await Cart.findOne({ user: userId });
+    if (!cart) return res.status(404).json({ message: 'Không tìm thấy giỏ hàng' });
 
-        if (!cart) {
-            return res.status(404).json({ 
-                success: false,
-                message: 'Giỏ hàng không tìm thấy' 
-            });
-        }
+    cart.items = [];
+    cart.totalAmount = 0;
 
-        cart.items = [];
-        await cart.save();
-
-        res.status(200).json({
-            success: true,
-            message: 'Xóa toàn bộ giỏ hàng thành công',
-            data: cart
-        });
-    } catch (error) {
-        res.status(500).json({ 
-            success: false,
-            message: 'Lỗi server', 
-            error: error.message 
-        });
-    }
+    await cart.save();
+    res.status(200).json({ success: true, message: 'Đã xoá toàn bộ giỏ hàng' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Lỗi server' });
+  }
 };
 
 exports.getCartCount = async (req, res) => {
