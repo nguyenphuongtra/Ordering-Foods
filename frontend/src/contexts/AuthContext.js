@@ -12,8 +12,8 @@ export const AuthProvider = ({ children }) => {
     const validateToken = async () => {
       if (token) {
         try {
-          const userProfile = await apiService.getProfile();
-          setUser(userProfile);
+          const res = await apiService.getProfile();
+          setUser(res.data);
         } catch (error) {
           console.error("Token không hợp lệ:", error);
           logout();
@@ -33,9 +33,9 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(userData));
     } else {
       try {
-        const userProfile = await apiService.getProfile();
-        setUser(userProfile);
-        localStorage.setItem('user', JSON.stringify(userProfile));
+        const res = await apiService.getProfile();
+        setUser(res.data);
+        localStorage.setItem('user', JSON.stringify(res.data));
       } catch (err) {
         logout();
         throw err;

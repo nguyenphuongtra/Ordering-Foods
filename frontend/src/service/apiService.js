@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL ||'http://localhost:4000/api';
+const API_BASE_URL ='http://localhost:4000/api';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
@@ -28,8 +28,7 @@ const apiService = {
       body: JSON.stringify(data),
     }),
   getProfile: () =>
-    request(`${API_BASE_URL}/auth/profile`, { headers: { ...getAuthHeaders() } })
-    .then(res => res.data),
+    request(`${API_BASE_URL}/auth/profile`, { headers: { ...getAuthHeaders() } }),
 
   getOverview: () =>
     request(`${API_BASE_URL}/stats/overview`, { headers: { ...getAuthHeaders() } }),
@@ -38,7 +37,7 @@ const apiService = {
     request(`${API_BASE_URL}/foods?${new URLSearchParams(params)}`, {
       headers: { ...getAuthHeaders() },
     })
-    .then(res => (res?.data?.foods && Array.isArray(res.data.foods) ? res.data.foods : [])),
+    .then(res => Array.isArray(res.data?.foods) ? res.data.foods : []),
 
   getFood: (id) =>
     request(`${API_BASE_URL}/foods/${id}`, { headers: { ...getAuthHeaders() } }),
@@ -60,9 +59,7 @@ const apiService = {
       headers: { ...getAuthHeaders() },
     }),
 
-  getCategories: () => 
-    request(`${API_BASE_URL}/category`)
-    .then(res => (res && Array.isArray(res) ? res : [])),
+  getCategories: () => request(`${API_BASE_URL}/category`),
   getCategory: (id) => request(`${API_BASE_URL}/category/${id}`),
   createCategory: (data) =>
     request(`${API_BASE_URL}/category`, {
@@ -89,8 +86,7 @@ const apiService = {
       body: JSON.stringify({ userId, foodId, quantity }),
     }),
   getCart: (userId) =>
-    request(`${API_BASE_URL}/cart/${userId}`, { headers: { ...getAuthHeaders() } })
-    .then(res => res.data),
+    request(`${API_BASE_URL}/cart/${userId}`, { headers: { ...getAuthHeaders() } }),
   updateCart: (data) =>
     request(`${API_BASE_URL}/cart/update`, {
       method: 'PUT',
