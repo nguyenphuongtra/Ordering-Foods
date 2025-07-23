@@ -40,13 +40,16 @@ const Menu = () => {
       return;
     }
 
-    if (!user && t) {
+    if (!loading && !user && t) {
       navigate('/login', {
         state: { 
           from: { pathname: `/menu/${t}` },
           tableId: t 
         }
       });
+      return;
+    }
+    if (loading) {
       return;
     }
 
