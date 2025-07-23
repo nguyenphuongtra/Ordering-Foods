@@ -20,8 +20,7 @@ const statsRouter = require("./routes/stats");
 app.use(express.json())
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://ordering-foods-ki96.vercel.app',
-  'https://ordering-foods-ggdi.vercel.app'
+  'https://ordering-foods.vercel.app/'
 ];
 
 app.use(cors({
