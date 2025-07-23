@@ -28,7 +28,8 @@ const apiService = {
       body: JSON.stringify(data),
     }),
   getProfile: () =>
-    request(`${API_BASE_URL}/auth/profile`, { headers: { ...getAuthHeaders() } }),
+    request(`${API_BASE_URL}/auth/profile`, { headers: { ...getAuthHeaders() } })
+    .then(res => res.data),
 
   getOverview: () =>
     request(`${API_BASE_URL}/stats/overview`, { headers: { ...getAuthHeaders() } }),

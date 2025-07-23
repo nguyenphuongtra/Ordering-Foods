@@ -47,7 +47,7 @@ const Login = () => {
     setError("");
     try {
       const data = await apiService.login(form); // sử dụng apiService
-      await login(data.token, data.user);
+      await login(data.token, data.data);
       navigate(from, { replace: true });
     } catch (err) {
       setError(err.message);
