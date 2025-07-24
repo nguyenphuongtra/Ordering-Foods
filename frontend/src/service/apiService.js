@@ -27,8 +27,12 @@ const apiService = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }),
-  getProfile: () =>
-    request(`${API_BASE_URL}/auth/profile`, { headers: { ...getAuthHeaders() } }),
+  getProfile: (token) => {
+    const headers = token
+      ? { Authorization: `Bearer ${token}` }
+      : getAuthHeaders();
+    return request(`${API_BASE_URL}/auth/profile`, { headers });
+  },
 
   getOverview: () =>
     request(`${API_BASE_URL}/stats/overview`, { headers: { ...getAuthHeaders() } }),

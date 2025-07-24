@@ -5,37 +5,54 @@ export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('token');
+    }
+    return null;
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const validateToken = async () => {
-      if (token) {
-        try {
-          const res = await apiService.getProfile();
-          setUser(res.data);
-        } catch (error) {
-          console.error("Token không hợp lệ:", error);
-          logout();
-        }
+      if (!token) {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+
+      try {
+        const res = await apiService.getProfile();
+        setUser(res.data);
+      } catch (error) {
+        console.error("Token không hợp lệ:", error);
+        logout();
+      } finally {
+        setLoading(false);
+      }
     };
+
     validateToken();
   }, [token]);
 
   const login = async (newToken, userData = null) => {
-    localStorage.setItem('token', newToken);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('token', newToken);
+    }
+
     setToken(newToken);
 
     if (userData) {
       setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(userData));
+      }
     } else {
       try {
-        const res = await apiService.getProfile();
+        const res = await apiService.getProfile(newToken);
         setUser(res.data);
-        localStorage.setItem('user', JSON.stringify(res.data));
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('user', JSON.stringify(res.data));
+        }
       } catch (err) {
         logout();
         throw err;
@@ -44,8 +61,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
     setToken(null);
     setUser(null);
   };

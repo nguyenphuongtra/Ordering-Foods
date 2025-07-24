@@ -96,7 +96,7 @@ const Menu = () => {
 
     if (searchTerm) {
       result = result.filter(food => 
-        food.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (food.name && food.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (food.description && food.description.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }

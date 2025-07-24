@@ -47,9 +47,9 @@ const FoodManagement = () => {
   }
  };
 
-  const filtered = foods.filter(f=>
-    f.name.toLowerCase().includes(search.toLowerCase()) ||
-    f.category.toLowerCase().includes(search.toLowerCase())
+  const filtered = foods.filter(f =>
+    (f.name && f.name.toLowerCase().includes(search.toLowerCase())) ||
+    (f.category && f.category.toLowerCase().includes(search.toLowerCase()))
   );
 
   const cols = [

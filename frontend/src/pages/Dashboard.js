@@ -21,7 +21,7 @@ const Dashboard = () => {
     { title: 'Orders',  value: stats.orders,  icon: ShoppingBag,     bg: 'success' },
     { title: 'Users',   value: stats.users,   icon: Users,           bg: 'warning' },
     {
-      title: 'Revenue',
+      title: 'Doanh thu',
       value: stats.revenue.toLocaleString('vi-VN') + ' ₫',
       icon: BarChart3,
       bg: 'danger'
@@ -36,7 +36,7 @@ const Dashboard = () => {
             <div className="card-body d-flex align-items-center">
               <c.icon className="me-3" size={28} />
               <div>
-                <h5 className="card-title">Total {c.title}</h5>
+                <h5 className="card-title">Tổng {c.title}</h5>
                 <p className="card-text fs-4 mb-0">{c.value}</p>
               </div>
             </div>

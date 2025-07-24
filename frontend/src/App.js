@@ -24,6 +24,8 @@ import LoginSuccess from "./pages/LoginSuccess";
 import { BarChart3, UtensilsCrossed, ShoppingBag, Users } from 'lucide-react';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import About from './pages/About';
+import Contact from './pages/Contact';
 
 // Component xử lý token từ URL
 function TokenHandler() {
@@ -61,7 +63,7 @@ const AdminLayout = () => {
     <div className="container-fluid">
       <div className="row">
         <nav className="col-12 col-md-3 col-lg-2 bg-light sidebar py-3">
-          <h4 className="px-3">Restaurant Admin</h4>
+          <h4 className="px-3">Food Admin</h4>
           <ul className="nav flex-column">
             {tabs.map(t => (
               <li className="nav-item" key={t.id}>
@@ -127,6 +129,8 @@ function App() {
             <Route path="/scan" element={<QRScanner />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/checkout-success" element={<Success />} />
 
             <Route path="/login-success" element={<LoginSuccess />} />
