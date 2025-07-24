@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import "../assets/css/auth.css";
 import { AuthContext } from "../contexts/AuthContext";
+import { apiService, API_BASE_URL } from "../service/apiService";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -14,7 +15,6 @@ const Login = () => {
 
   const from = location.state?.from?.pathname || "/";
 
-  // ✅ Xử lý callback sau khi đăng nhập bằng Google thành công
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
@@ -45,26 +45,20 @@ const Login = () => {
     e.preventDefault();
     setError("");
     try {
-      const res = await fetch("http://localhost:4000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Đăng nhập thất bại");
-
+      const data = await apiService.login(form);
       await login(data.token, data.user);
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Đăng nhập thất bại");
     }
   };
 
   const handleGoogleLogin = () => {
     const tableId = location.state?.tableId;
+    const googleAuthUrl = `${API_BASE_URL}/auth/google`;
     const redirectUrl = tableId
-      ? `http://localhost:4000/api/auth/google?tableId=${encodeURIComponent(tableId)}`
-      : "http://localhost:4000/api/auth/google";
+      ? `${googleAuthUrl}?tableId=${encodeURIComponent(tableId)}`
+      : googleAuthUrl;
 
     window.location.href = redirectUrl;
   };

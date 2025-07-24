@@ -25,41 +25,41 @@ const Menu = () => {
   const [menuLoading, setMenuLoading] = useState(true);
 
   useEffect(() => {
+  // Nếu vẫn đang xác thực, chờ
     if (loading) return;
 
     const rawParam = paramTableId;
     const rawContext = contextTableId;
-    const rawStorage = localStorage.getItem('tableId');
+    const rawStorage = typeof window !== 'undefined' ? localStorage.getItem('tableId') : null;
     const p = cleanId(rawParam);
     const c = cleanId(rawContext);
     const s = cleanId(rawStorage);
     const t = p || c || s;
 
+    // Nếu không có tableId hợp lệ, điều hướng về trang chủ
     if (!t) {
       navigate('/');
       return;
     }
 
-    if (!loading && !user && t) {
+    // Nếu đã xác thực xong mà chưa đăng nhập, chuyển về login
+    if (!user) {
       navigate('/login', {
-        state: { 
-          from: { pathname: `/menu/${t}` },
-          tableId: t 
-        }
+        state: { from: { pathname: `/menu/${t}` }, tableId: t }
       });
       return;
     }
-    if (loading) {
-      return;
-    }
 
+    // Đã đăng nhập và có tableId, tiến hành thiết lập
     setTableId(t);
-    localStorage.setItem('tableId', t);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('tableId', t);
+    }
 
     const loadData = async () => {
       try {
         const [foodsData, categoriesData] = await Promise.all([
-          apiService.getFoods(), // Không cần truyền page, limit
+          apiService.getFoods(),
           apiService.getCategories(),
         ]);
 
@@ -78,7 +78,7 @@ const Menu = () => {
     };
 
     loadData();
-  }, [paramTableId, contextTableId, navigate, setTableId, user, loading]);
+  }, [loading, user, paramTableId, contextTableId, navigate, setTableId]);
 
   const filteredFoods = React.useMemo(() => {
     let result = foods;
