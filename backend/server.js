@@ -17,6 +17,7 @@ const orderRouter = require("./routes/order");
 const reviewRouter = require("./routes/review");
 const tableRouter = require("./routes/table");
 const statsRouter = require("./routes/stats");
+const paymentRouter = require("./routes/payment");
 app.use(express.json())
 const allowedOrigins = [
   'http://localhost:3000',
@@ -51,6 +52,7 @@ app.use("/api/orders", orderRouter);
 app.use("/api/reviews", reviewRouter);
 app.use("/api/tables", tableRouter);
 app.use("/api/stats", statsRouter);
+app.use("/api/payment", paymentRouter);
 // app.use("/admin", adminRouter);
 app.get("/",(req,res)=>{
     res.send("Hello Team 1")

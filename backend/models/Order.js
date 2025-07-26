@@ -7,6 +7,8 @@ const orderSchema =  new mongoose.Schema({
         quantity: { type: Number, required: true, min: 1 }
     }],
     totalAmount: { type: Number, required: true },
+    paymentMethod: { type: String, enum: ['Tại quầy', 'VNPAY'], default: 'Tại quầy' },
+    isPaid: { type: Boolean, default: false },
     status: { type: String, enum: ['Đang xử lý', 'Đã hoàn thành', 'Đã hủy'], default: 'Đang xử lý' }
 }, { timestamps: true });
 

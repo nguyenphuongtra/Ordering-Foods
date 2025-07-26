@@ -52,7 +52,7 @@ exports.createOrder = async (req, res) => {
             table: tableId,
             items,
             totalAmount,
-            paymentMethod: paymentMethod || 'cash',
+            paymentMethod: paymentMethod || 'Tại quầy',
             status: 'Đang xử lý'
         });
 
