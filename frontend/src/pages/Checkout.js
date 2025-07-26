@@ -11,8 +11,8 @@ export default function Checkout() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('Tại quầy');
 
-  // Clean tableId
   const paramTableId = cleanId(rawParam);
   const contextTableId = cleanId(rawContext);
   const tableId = paramTableId || contextTableId || cleanId(localStorage.getItem('tableId'));
@@ -27,14 +27,25 @@ export default function Checkout() {
       tableId,
       items: cartItems.map(item => ({ food: item._id || item.id, quantity: item.quantity })),
       totalAmount: getTotalPrice(),
+      paymentMethod,
       status: 'Đang xử lý'
     };
 
     setLoading(true);
     try {
       const newOrder = await apiService.createOrder(orderData);
-      clearCart();
-      navigate('/checkout-success', { state: { order: newOrder.data || newOrder, tableId } });
+      if (paymentMethod === 'VNPAY') {
+        const paymentUrlData = {
+          orderId: newOrder.data._id,
+          amount: newOrder.data.totalAmount,
+          orderDescription: `Thanh toan don hang cho ban ${tableId}`,
+        };
+        const paymentUrlResponse = await apiService.createPaymentUrl(paymentUrlData);
+        window.location.href = paymentUrlResponse.data;
+      } else {
+        clearCart();
+        navigate('/success', { state: { order: newOrder.data || newOrder, tableId } });
+      }
     } catch (error) {
       console.error('Thanh toán thất bại', error.message);
       alert('Thanh toán thất bại. Vui lòng thử lại.');
@@ -115,6 +126,40 @@ export default function Checkout() {
                     <div className="d-flex justify-content-between align-items-center">
                       <h5 className="text-white mb-0 fw-bold">Tổng thanh toán:</h5>
                       <h4 className="text-white mb-0 fw-bold">{getTotalPrice().toLocaleString()}₫</h4>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <h5 className="fw-bold mb-3">Chọn phương thức thanh toán</h5>
+                  <div className="d-flex justify-content-around">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="paymentMethod"
+                        id="cash"
+                        value="Tại quầy"
+                        checked={paymentMethod === 'Tại quầy'}
+                        onChange={() => setPaymentMethod('Tại quầy')}
+                      />
+                      <label className="form-check-label" htmlFor="cash">
+                        Tại quầy
+                      </label>
+                    </div>
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="paymentMethod"
+                        id="vnpay"
+                        value="VNPAY"
+                        checked={paymentMethod === 'VNPAY'}
+                        onChange={() => setPaymentMethod('VNPAY')}
+                      />
+                      <label className="form-check-label" htmlFor="vnpay">
+                        VNPAY
+                      </label>
                     </div>
                   </div>
                 </div>

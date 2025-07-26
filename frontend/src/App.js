@@ -1,13 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useNavigate,
-  Navigate,
-} from 'react-router-dom';
+import {BrowserRouter as Router,Routes, Route, useNavigate, Navigate,} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
 import Menu from './pages/Menu';
 import CartModal from './components/CartModal';
 import { CartProvider } from './contexts/CartContext';
@@ -26,8 +19,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import VnpayReturn from './pages/VnpayReturn';
 
-// Component xử lý token từ URL
 function TokenHandler() {
   const navigate = useNavigate();
   useEffect(() => {
@@ -35,14 +28,13 @@ function TokenHandler() {
     const token = params.get('token');
     if (token) {
       localStorage.setItem('token', token);
-      window.history.replaceState({}, document.title, "/");
+      window.history.replaceState({}, document.title, "/menu");
       navigate('/');
     }
   }, [navigate]);
   return null;
 }
 
-// Giao diện admin
 const AdminLayout = () => {
   const [tab, setTab] = useState('dashboard');
   const tabs = [
@@ -87,7 +79,6 @@ const AdminLayout = () => {
   );
 };
 
-// Route dành cho admin (chặn nếu không phải admin)
 const AdminRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
 
@@ -108,7 +99,6 @@ const AdminRoute = ({ children }) => {
   return children;
 };
 
-// Layout chung cho trang client
 function Layout({ children }) {
   return (
     <>
@@ -118,7 +108,6 @@ function Layout({ children }) {
   );
 }
 
-// App chính
 function App() {
   return (
     <AuthProvider>
@@ -131,7 +120,8 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/checkout-success" element={<Success />} />
+            <Route path="/success" element={<Success />} />
+            <Route path="/vnpay_return" element={<VnpayReturn />} />
 
             <Route path="/login-success" element={<LoginSuccess />} />
             <Route path="/checkout/:tableId?" element={
@@ -149,15 +139,11 @@ function App() {
                 <Menu />
               </Layout>
             } />
-
-            {/* Admin routes */}
             <Route path="/admin" element={
               <AdminRoute>
                 <AdminLayout />
               </AdminRoute>
             } />
-
-            {/* Redirect root / về /menu */}
             <Route path="/" element={<Navigate to="/menu" replace />} />
           </Routes>
         </Router>

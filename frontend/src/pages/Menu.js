@@ -25,7 +25,6 @@ const Menu = () => {
   const [menuLoading, setMenuLoading] = useState(true);
 
   useEffect(() => {
-  // Nếu vẫn đang xác thực, chờ
     if (loading) return;
 
     const rawParam = paramTableId;
@@ -36,13 +35,11 @@ const Menu = () => {
     const s = cleanId(rawStorage);
     const t = p || c || s;
 
-    // Nếu không có tableId hợp lệ, điều hướng về trang chủ
     if (!t) {
       navigate('/');
       return;
     }
 
-    // Nếu đã xác thực xong mà chưa đăng nhập, chuyển về login
     if (!user) {
       navigate('/login', {
         state: { from: { pathname: `/menu/${t}` }, tableId: t }
@@ -50,7 +47,6 @@ const Menu = () => {
       return;
     }
 
-    // Đã đăng nhập và có tableId, tiến hành thiết lập
     setTableId(t);
     if (typeof window !== 'undefined') {
       localStorage.setItem('tableId', t);

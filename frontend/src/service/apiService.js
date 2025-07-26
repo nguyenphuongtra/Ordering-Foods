@@ -134,6 +134,15 @@ const apiService = {
       },
       body: JSON.stringify(data),
     }),
+  createPaymentUrl: (data) =>
+    request(`${API_BASE_URL}/payment/create_payment_url`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify(data),
+    }),
   updateOrder: (id, data) =>
     request(`${API_BASE_URL}/orders/${id}`, {
       method: 'PUT',
@@ -209,6 +218,7 @@ const apiService = {
       method: 'DELETE',
       headers: { ...getAuthHeaders() },
     }),
+  
 };
 
 export { apiService, API_BASE_URL, getAuthHeaders, request };

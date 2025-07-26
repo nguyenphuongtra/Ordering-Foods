@@ -13,7 +13,7 @@ const Login = () => {
   const location = useLocation();
   const { login } = useContext(AuthContext);
 
-  const from = location.state?.from?.pathname || "/";
+  const from = location.state?.from?.pathname || "/menu";
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
