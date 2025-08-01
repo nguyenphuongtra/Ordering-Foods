@@ -1,7 +1,15 @@
 import React from 'react';
 import { Edit, Trash2 } from 'lucide-react';
 
-const Table = ({ columns, data, onEdit, onDelete }) => {
+const Table = ({ columns, data, onEdit, onDelete, onRowClick }) => {
+  const handleRowClick = (e, item) => {
+    // Ngăn chặn onRowClick khi tương tác với button hoặc select
+    if (e.target.closest('button') || e.target.closest('select')) return;
+    if (onRowClick) {
+      onRowClick(item);
+    }
+  };
+
   return (
     <div className="table-responsive">
       <table className="table table-hover align-middle">
@@ -13,7 +21,11 @@ const Table = ({ columns, data, onEdit, onDelete }) => {
         </thead>
         <tbody>
           {data.map(item => (
-            <tr key={item._id || item.id}>
+            <tr 
+              key={item._id || item.id} 
+              onClick={(e) => handleRowClick(e, item)}
+              style={{ cursor: onRowClick ? 'pointer' : 'default' }}
+            >
               {columns.map(col => (
                 <td key={col.key}>
                   {col.render ? col.render(item[col.key], item) : item[col.key]}

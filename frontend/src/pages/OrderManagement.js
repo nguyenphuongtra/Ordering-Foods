@@ -2,18 +2,45 @@ import React, { useEffect, useState } from 'react';
 import { apiService } from '../service/apiService';
 import Table from '../components/Table';
 import SearchBar from '../components/SearchBar';
+import OrderDetailModal from '../components/OrderDetailModal';
 
 const OrderManagement = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pages: 1,
+    limit: 10,
+  });
 
-  const loadOrders = async () => {
+  const handleRowClick = async (order) => {
+    try {
+      const res = await apiService.getOrder(order._id);
+      setSelectedOrder(res.data);
+    } catch (err) {
+      console.error('Failed to fetch order details:', err);
+      alert('Không thể tải chi tiết đơn hàng.');
+    }
+  };
+
+  const loadOrders = async (currentPage = 1) => {
     try {
       setLoading(true);
-      const res = await apiService.getOrders();
+      const params = {
+        page: currentPage,
+        limit: pagination.limit,
+      };
+      if (status !== 'all') {
+        params.status = status;
+      }
+      const res = await apiService.getOrders(params);
       setOrders(Array.isArray(res?.data?.orders) ? res.data.orders : []);
+      if (res?.data?.pagination) {
+        setPagination(res.data.pagination);
+      }
     } catch (err) {
       console.error('Load orders failed:', err);
       alert(err.message || 'Không thể tải danh sách đơn hàng');
@@ -23,8 +50,14 @@ const OrderManagement = () => {
   };
 
   useEffect(() => {
-    loadOrders();
-  }, []);
+    loadOrders(1);
+  }, [status]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= pagination.pages) {
+      loadOrders(newPage);
+    }
+  };
 
   const changeStatus = async (order, newStatus) => {
     await apiService.updateOrder(order._id, { status: newStatus });
@@ -38,19 +71,8 @@ const OrderManagement = () => {
     }
   };
 
-  const filtered = orders.filter(o => {
-    const keyword = search.toLowerCase();
-    const matchSearch = [
-      o._id,
-      o.user?._id,
-      o.user?.name,
-      o.table?._id,
-      o.table?.tableNumber?.toString()
-    ].some(v => v?.toString().toLowerCase().includes(keyword));
-
-    const matchStatus = status === 'all' || o.status === status;
-    return matchSearch && matchStatus;
-  });
+  // Filtering is now done on the backend, so we can remove the client-side filtering.
+  const filtered = orders;
 
   const columns = [
     { key: '_id', label: 'Order ID' },
@@ -70,18 +92,30 @@ const OrderManagement = () => {
       render: a => a.toLocaleString('vi-VN') + ' ₫'
     },
     {
+      key: 'paymentMethod',
+      label: 'Thanh toán'
+    },
+    {
       key: 'status',
       label: 'Status',
-      render: (s, o) => (
-        <select
-          className="form-select form-select-sm"
-          value={s}
-          onChange={e => changeStatus(o, e.target.value)}
-        >
-          {['Đang xử lý', 'Đã hoàn thành', 'Đã hủy']
-            .map(st => <option key={st} value={st}>{st}</option>)}
-        </select>
-      )
+      render: (s, o) => {
+        const statusColors = {
+          'Đang xử lý': 'text-warning',
+          'Đã hoàn thành': 'text-success',
+          'Đã hủy': 'text-danger'
+        };
+        return (
+          <select
+            className={`form-select form-select-sm ${statusColors[s] || ''}`}
+            value={s}
+            onChange={e => changeStatus(o, e.target.value)}
+            style={{ fontWeight: 'bold' }}
+          >
+            {['Đang xử lý', 'Đã hoàn thành', 'Đã hủy']
+              .map(st => <option key={st} value={st}>{st}</option>)}
+          </select>
+        )
+      }
     },
     {
       key: 'createdAt',
@@ -121,7 +155,40 @@ const OrderManagement = () => {
         columns={columns}
         data={filtered}
         onDelete={removeOrder}
+        onRowClick={handleRowClick}
       />
+
+      <div className="d-flex justify-content-end align-items-center mt-3">
+        <span>
+          Trang{' '}
+          <strong>
+            {pagination.page} of {pagination.pages}
+          </strong>
+        </span>
+        <div className="ms-3">
+          <button
+            className="btn btn-outline-secondary btn-sm"
+            onClick={() => handlePageChange(pagination.page - 1)}
+            disabled={pagination.page <= 1}
+          >
+            Trước
+          </button>
+          <button
+            className="btn btn-outline-secondary btn-sm ms-2"
+            onClick={() => handlePageChange(pagination.page + 1)}
+            disabled={pagination.page >= pagination.pages}
+          >
+            Tiếp theo
+          </button>
+        </div>
+      </div>
+
+      {selectedOrder && (
+        <OrderDetailModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+        />
+      )}
     </div>
   );
 };

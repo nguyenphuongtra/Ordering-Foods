@@ -1,4 +1,3 @@
-// src/components/MenuFilters.jsx
 import React from 'react';
 
 const MenuFilters = ({

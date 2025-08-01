@@ -111,8 +111,8 @@ const apiService = {
   getCartCount: (userId) =>
     request(`${API_BASE_URL}/cart/count/${userId}`, { headers: { ...getAuthHeaders() } }),
 
-  getOrders: () =>
-    request(`${API_BASE_URL}/orders`, { headers: { ...getAuthHeaders() } }),
+  getOrders: (params = {}) =>
+    request(`${API_BASE_URL}/orders?${new URLSearchParams(params)}`, { headers: { ...getAuthHeaders() } }),
   getOrderStats: () =>
     request(`${API_BASE_URL}/orders/stats`, { headers: { ...getAuthHeaders() } }),
   getOrder: (id) =>
